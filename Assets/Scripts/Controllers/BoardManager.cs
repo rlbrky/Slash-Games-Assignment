@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
@@ -10,17 +9,22 @@ namespace Controllers
 {
     public class BoardManager : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private TileDefinitionRegistry _registry;
+        [Header("References")] [SerializeField]
+        private TileDefinitionRegistry _registry;
+
         [SerializeField] private LevelDefinition _level;
         [SerializeField] private TileView _tilePrefab;
         [SerializeField] private RectTransform _boardRoot;
-        
-        [Header("Layout")]
-        [SerializeField] private float _tileSize = 100f;
+
+        [Header("Layout")] [SerializeField] private float _tileSize = 100f;
+
         [SerializeField] private float _layerOffset = 6f;
         [SerializeField] private float _overlapLimit = 0.25f;
         [SerializeField] private float _layerScaleBonus = 0.04f;
+
+        [Header("Systems")] [SerializeField] private OrderSystem _orderSystem;
+
+        [SerializeField] private OrderView _orderView;
 
         private readonly List<TileModel> _allTiles = new();
         private readonly Dictionary<TileModel, TileView> _tileViews = new();
@@ -33,6 +37,8 @@ namespace Controllers
         private void Start()
         {
             BuildBoard();
+            _orderView.BindToSystem(_orderSystem);
+            _orderSystem.StartFirstOrder();
         }
 
         /// <summary>
@@ -50,17 +56,17 @@ namespace Controllers
                     Debug.LogWarning($"No tile definition for {spawnData.tileType}");
                     continue;
                 }
-                
+
                 var view = Instantiate(_tilePrefab, _boardRoot);
                 var rectTransform = view.GetComponent<RectTransform>();
-                
+
                 rectTransform.anchoredPosition = GetTilePosition(model);
                 // Make each layer's tiles bigger than the last for depth effect. Closer tiles look bigger.
                 rectTransform.localScale = Vector3.one * (1f + model.Layer * _layerScaleBonus);
-                
+
                 view.Initialize(model, definition);
                 view.OnTileClicked += HandleTileClicked;
-                
+
                 _allTiles.Add(model);
                 _tileViews[model] = view;
             }
@@ -81,13 +87,40 @@ namespace Controllers
         private void SortTilesByLayer()
         {
             var sorted = _tileViews.OrderBy(pair => pair.Key.Layer).ToList();
-            
+
             foreach (var pair in sorted)
                 pair.Value.transform.SetAsLastSibling();
         }
 
+        private void HandleTileClicked(TileModel model)
+        {
+            bool matched = _orderSystem.TrySubmitTile(model.TileType);
+
+            if (matched)
+            {
+                RemoveTile(model);
+            }
+            else
+            {
+                // TODO: Rack System hooks
+                Debug.Log($"{model.TileType} not matched - goes to rack!");
+            }
+        }
+
+        private void RemoveTile(TileModel model)
+        {
+            if (_tileViews.TryGetValue(model, out var view))
+            {
+                _tileViews.Remove(model);
+                _allTiles.Remove(model);
+
+                Destroy(view.gameObject);
+                RecalculateBlocking();
+            }
+        }
+
         #region Helpers
-        
+
         private Vector2 GetTilePosition(TileModel model)
         {
             float gridWidth = (_level.ColumnCount - 1) * _tileSize;
@@ -95,13 +128,13 @@ namespace Controllers
 
             float startX = -gridWidth / 2f;
             float startY = -gridHeight / 2f;
-            
+
             return new Vector2(
                 startX + model.Column * _tileSize + model.Layer * _layerOffset,
                 startY + model.Row * _tileSize + model.Layer * _layerOffset
             );
         }
-        
+
         private bool Overlaps(TileModel tile, TileModel other)
         {
             float overlapX = 1f - Mathf.Abs(tile.Column - other.Column);
@@ -110,11 +143,5 @@ namespace Controllers
         }
 
         #endregion
-        
-        private void HandleTileClicked(TileModel model)
-        {
-            Debug.Log($"Tile clicked: {model.TileType} at ({model.Column},{model.Row}) layer {model.Layer}");
-            // TODO: Order system and rack system hooks
-        }
     }
 }
