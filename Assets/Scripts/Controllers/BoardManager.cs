@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
@@ -16,21 +17,24 @@ namespace Controllers
         [SerializeField] private TileView _tilePrefab;
         [SerializeField] private RectTransform _boardRoot;
 
-        [Header("Layout")] [SerializeField] private float _tileSize = 100f;
-
+        [Header("Layout")] 
+        [SerializeField] private float _tileSize = 100f;
         [SerializeField] private float _layerOffset = 6f;
         [SerializeField] private float _overlapLimit = 0.25f;
         [SerializeField] private float _layerScaleBonus = 0.04f;
 
-        [Header("Systems")] [SerializeField] private OrderSystem _orderSystem;
-
+        [Header("Systems")] 
+        [SerializeField] private OrderSystem _orderSystem;
         [SerializeField] private OrderView _orderView;
         [SerializeField] private RackSystem _rackSystem;
         [SerializeField] private RackView _rackView;
+        [SerializeField] private GameStateManager _gameStateManager;
 
         private readonly List<TileModel> _allTiles = new();
         private readonly Dictionary<TileModel, TileView> _tileViews = new();
 
+        public event Action OnBoardCleared;
+        
         private void Awake()
         {
             _registry.Initialize();
@@ -42,6 +46,7 @@ namespace Controllers
             _orderView.BindToSystem(_orderSystem);
             _rackView.BindToSystem(_rackSystem);
             _orderSystem.StartFirstOrder();
+            _gameStateManager.BindToSystems(_rackSystem, this);
         }
 
         /// <summary>
@@ -114,14 +119,16 @@ namespace Controllers
 
         private void RemoveTile(TileModel model)
         {
-            if (_tileViews.TryGetValue(model, out var view))
-            {
-                _tileViews.Remove(model);
-                _allTiles.Remove(model);
+            if (!_tileViews.TryGetValue(model, out var view)) return;
+            
+            _tileViews.Remove(model);
+            _allTiles.Remove(model);
 
-                Destroy(view.gameObject);
-                RecalculateBlocking();
-            }
+            Destroy(view.gameObject);
+            RecalculateBlocking();
+
+            if (_allTiles.Count == 0)
+                OnBoardCleared?.Invoke();
         }
 
         #region Helpers

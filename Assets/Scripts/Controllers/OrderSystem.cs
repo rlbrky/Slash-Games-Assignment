@@ -9,7 +9,8 @@ namespace Controllers
 {
     public class OrderSystem : MonoBehaviour
     {
-        [Header("Settings")] [SerializeField] private TileDefinitionRegistry _registry;
+        [Header("Settings")]
+        [SerializeField] private TileDefinitionRegistry _registry;
 
         private readonly List<TileType> _allTileTypes = new();
 

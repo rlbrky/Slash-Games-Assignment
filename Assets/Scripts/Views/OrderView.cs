@@ -6,9 +6,8 @@ namespace Views
 {
     public class OrderView : MonoBehaviour
     {
-        [Header("References")] [SerializeField]
-        private OrderSlotView _slot1;
-
+        [Header("References")]
+        [SerializeField] private OrderSlotView _slot1;
         [SerializeField] private OrderSlotView _slot2;
         [SerializeField] private OrderSlotView _slot3;
         [SerializeField] private TileDefinitionRegistry _registry;

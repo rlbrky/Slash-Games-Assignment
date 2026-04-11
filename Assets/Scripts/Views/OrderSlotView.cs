@@ -6,14 +6,13 @@ namespace Views
 {
     public class OrderSlotView : MonoBehaviour
     {
-        [Header("References")] [SerializeField]
-        private Image _iconImage;
-
+        [Header("References")] 
+        [SerializeField] private Image _iconImage;
         [SerializeField] private Image _backgroundImage;
         [SerializeField] private GameObject _fulfilledOverlay;
 
-        [Header("Colors")] [SerializeField] private Color _pendingColor = Color.white;
-
+        [Header("Colors")]
+        [SerializeField] private Color _pendingColor = Color.white;
         [SerializeField] private Color _fulfilledColor = Color.green;
 
         public void SetRequirement(TileDefinition definition, bool isFulfilled)
