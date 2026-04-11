@@ -17,5 +17,27 @@ namespace Data
         public int ColumnCount => columnCount;
 
         public IReadOnlyList<TileSpawnData> Tiles => _tiles;
+        
+#if UNITY_EDITOR
+        public void AddTile(TileSpawnData tile)
+        {
+            _tiles.Add(tile);
+        }
+
+        public void RemoveTile(int column, int row, int layer)
+        {
+            _tiles.RemoveAll(t => t.column == column && t.row == row && t.layer == layer);
+        }
+
+        public void RemoveAllTilesOnLayer(int layer)
+        {
+            _tiles.RemoveAll(t => t.layer == layer);
+        }
+
+        public void RemoveAllTiles()
+        {
+            _tiles.Clear();
+        }
+#endif
     }
 }

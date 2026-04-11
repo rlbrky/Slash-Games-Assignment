@@ -38,5 +38,15 @@ namespace Views
                 }
             }
         }
+        
+        public Vector3 GetNextEmptySlotWorldPosition(RackModel model)
+        {
+            int nextIndex = model.Slots.Count;
+            
+            if (nextIndex >= _slots.Count)
+                return Vector3.zero;
+
+            return _slots[nextIndex].transform.position;
+        }
     }
 }

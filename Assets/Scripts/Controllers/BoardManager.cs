@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using DG.Tweening;
 using Models;
 using UnityEngine;
 using Views;
@@ -66,7 +67,7 @@ namespace Controllers
                 }
 
                 var view = Instantiate(_tilePrefab, _boardRoot);
-                var rectTransform = view.GetComponent<RectTransform>();
+                var rectTransform = view.Rect;
 
                 rectTransform.anchoredPosition = GetTilePosition(model);
                 // Make each layer's tiles bigger than the last for depth effect. Closer tiles look bigger.
@@ -75,6 +76,9 @@ namespace Controllers
                 view.Initialize(model, definition);
                 view.OnTileClicked += HandleTileClicked;
 
+                float delay = model.Layer * 0.05f;
+                DOVirtual.DelayedCall(delay, () => view.AnimatePunchOnSpawn());
+                
                 _allTiles.Add(model);
                 _tileViews[model] = view;
             }
@@ -106,29 +110,36 @@ namespace Controllers
 
             if (matched)
             {
-                RemoveTile(model);
+                int slotIndex = _orderView.GetFirstUnfulfilledSlotIndex(_orderSystem.ActiveOrder);
+                Vector3 targetPos = _orderView.GetSlotWorldPosition(slotIndex);
+                RemoveTileWithAnimation(model, targetPos);
                 return;
             }
 
             bool addedToRack = _rackSystem.TryAddTile(model.TileType);
             if (addedToRack)
-                RemoveTile(model);
+            {
+                Vector3 targetPos = _rackView.GetNextEmptySlotWorldPosition(_rackSystem.Model);
+                RemoveTileWithAnimation(model, targetPos);
+            }
             else
                 Debug.LogWarning("Rack is full - tile couldn't be added!");
         }
 
-        private void RemoveTile(TileModel model)
+        private void RemoveTileWithAnimation(TileModel model, Vector3 targetWorldPos)
         {
             if (!_tileViews.TryGetValue(model, out var view)) return;
-            
+
             _tileViews.Remove(model);
             _allTiles.Remove(model);
-
-            Destroy(view.gameObject);
             RecalculateBlocking();
 
-            if (_allTiles.Count == 0)
-                OnBoardCleared?.Invoke();
+            view.AnimateFlyTo(targetWorldPos, () =>
+            {
+                Destroy(view.gameObject);
+                if (_allTiles.Count == 0)
+                    OnBoardCleared?.Invoke();
+            });
         }
 
         #region Helpers

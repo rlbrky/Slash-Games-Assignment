@@ -5,13 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb7a4236-53c9-45a7-a9d9-5b8bf5ecd9d9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/GameStateManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Data/GameState.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Editor/LevelEditorWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ScriptableObjects/Levels/Level-1.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/Levels/Level-1.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/OrderSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/OrderSystem.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/OrderSlotView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/OrderSlotView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Data/LevelDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Data/LevelDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Data/TileDefinitionRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Data/TileDefinitionRegistry.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/OrderView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/OrderView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/RackView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/RackView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/TileView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/TileView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +40,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Editor/LevelEditorWindow.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/BoardManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/GameStateManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Controllers/OrderSystem.cs" root0="FORCE_HIGHLIGHTING" />
@@ -135,7 +138,7 @@
       <option name="presentableId" value="Default" />
       <updated>1775912148205</updated>
       <workItem from="1775912148207" duration="6939000" />
-      <workItem from="1775919513140" duration="4856000" />
+      <workItem from="1775919513140" duration="14548000" />
     </task>
     <task id="LOCAL-00001" summary="gitignore update.">
       <option name="closed" value="true" />
@@ -169,7 +172,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775930080033</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added game state manager.">
+      <option name="closed" value="true" />
+      <created>1775931152868</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1775931152868</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -200,10 +211,9 @@
     <MESSAGE value="Gitignore update implementd to the project." />
     <MESSAGE value="Implemented order system." />
     <MESSAGE value="Added rack system." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added rack system." />
+    <MESSAGE value="Added game state manager." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added game state manager." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
-    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
-    <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

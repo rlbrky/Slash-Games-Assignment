@@ -21,4 +21,9 @@ public class TileDefinitionRegistry : ScriptableObject
         _lookup.TryGetValue(tileType, out TileDefinition tileDefinition);
         return tileDefinition;
     }
+
+    private void OnEnable()
+    {
+        Initialize();
+    }
 }

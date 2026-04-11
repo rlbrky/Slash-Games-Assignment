@@ -48,5 +48,28 @@ namespace Views
                     _slots[i].SetEmpty();
             }
         }
+
+        #region Helpers
+
+        public Vector3 GetSlotWorldPosition(int index)
+        {
+            if(index < 0 || index >= _slots.Length)
+                return Vector3.zero;
+            
+            return _slots[index].transform.position;
+        }
+
+        public int GetFirstUnfulfilledSlotIndex(OrderModel order)
+        {
+            for (int i = 0; i < order.Requirements.Count; i++)
+            {
+                if (!order.Requirements[i].isFulfilled)
+                    return i;
+            }
+
+            return 0;
+        }
+
+        #endregion
     }
 }
