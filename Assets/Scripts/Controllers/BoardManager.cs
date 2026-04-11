@@ -25,6 +25,8 @@ namespace Controllers
         [Header("Systems")] [SerializeField] private OrderSystem _orderSystem;
 
         [SerializeField] private OrderView _orderView;
+        [SerializeField] private RackSystem _rackSystem;
+        [SerializeField] private RackView _rackView;
 
         private readonly List<TileModel> _allTiles = new();
         private readonly Dictionary<TileModel, TileView> _tileViews = new();
@@ -38,6 +40,7 @@ namespace Controllers
         {
             BuildBoard();
             _orderView.BindToSystem(_orderSystem);
+            _rackView.BindToSystem(_rackSystem);
             _orderSystem.StartFirstOrder();
         }
 
@@ -99,12 +102,14 @@ namespace Controllers
             if (matched)
             {
                 RemoveTile(model);
+                return;
             }
+
+            bool addedToRack = _rackSystem.TryAddTile(model.TileType);
+            if (addedToRack)
+                RemoveTile(model);
             else
-            {
-                // TODO: Rack System hooks
-                Debug.Log($"{model.TileType} not matched - goes to rack!");
-            }
+                Debug.LogWarning("Rack is full - tile couldn't be added!");
         }
 
         private void RemoveTile(TileModel model)
