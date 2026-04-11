@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d1c017a6a9a3db48a359fce533c3b5a, type: 3}
+  m_Name: Cola
+  m_EditorClassIdentifier: 
+  _tileType: 5
+  _icon: {fileID: 21300000, guid: 4898d50809a3e254486408de3a6e88d9, type: 3}
+  _tileColor: {r: 1, g: 1, b: 1, a: 1}
