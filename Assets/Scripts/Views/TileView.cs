@@ -54,7 +54,9 @@ namespace Views
 
         private void HandleClick()
         {
-            if(_model.IsBlocked) return;
+            if(_model.IsBlocked) 
+                return;
+            
             OnTileClicked?.Invoke(_model);
         }
 
@@ -101,10 +103,21 @@ namespace Views
 
         public void AnimateBlockedChange(bool blocked)
         {
-            float targetAlpha = blocked ? 1f : 0f;
-            _blockedOverlay.DOFade(targetAlpha, _blockedFadeDuration);
             _iconImage.DOColor(blocked ? _blockedTint : _normalTint, _blockedFadeDuration);
             _button.interactable = !blocked;
+
+            if (blocked)
+            {
+                _blockedOverlay.gameObject.SetActive(true);
+                Color color = _blockedOverlay.color;
+                _blockedOverlay.color = new Color(color.r, color.g, color.b, 0f);
+                _blockedOverlay.DOFade(color.a, _blockedFadeDuration);
+            }
+            else
+            {
+                _blockedOverlay.DOFade(0f, _blockedFadeDuration)
+                    .OnComplete(() => _blockedOverlay.gameObject.SetActive(false));
+            }
         }
 
         public void AnimatePunchOnSpawn()

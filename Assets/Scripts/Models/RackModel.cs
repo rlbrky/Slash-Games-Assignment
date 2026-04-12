@@ -18,7 +18,6 @@ namespace Models
         public bool IsFull => _slots.Count >= Capacity;
 
         public event Action<RackModel> OnRackChanged;
-        public event Action<TileType> OnThreeMatched;
         public event Action OnRackFull;
 
         public bool TryAddTile(TileType tileType)
@@ -28,11 +27,14 @@ namespace Models
 
             _slots.Add(tileType);
             OnRackChanged?.Invoke(this);
+            
+            return true;
+        }
 
+        public void NotifyIfNull()
+        {
             if (IsFull)
                 OnRackFull?.Invoke();
-
-            return true;
         }
     }
 }

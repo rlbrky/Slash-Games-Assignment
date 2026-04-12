@@ -34,6 +34,11 @@ namespace Controllers
             return _model.TryAddTile(tileType);
         }
 
+        public void CheckFullAfterAnimation()
+        {
+            _model.NotifyIfNull();
+        }
+
         private void HandleRackChanged(RackModel model) => OnRackChanged?.Invoke(model);
         private void HandleRackFull() => OnRackFull?.Invoke();
     }

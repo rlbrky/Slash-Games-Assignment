@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core;
 using Data;
 using DG.Tweening;
 using Models;
@@ -9,7 +10,7 @@ using Views;
 
 namespace Controllers
 {
-    public class BoardManager : MonoBehaviour
+    public class BoardManager : MonoBehaviour, IBoardTileProvider
     {
         [Header("References")] [SerializeField]
         private TileDefinitionRegistry _registry;
@@ -31,6 +32,9 @@ namespace Controllers
         [SerializeField] private RackView _rackView;
         [SerializeField] private GameStateManager _gameStateManager;
 
+        [Header("UI")]
+        [SerializeField] private GameResultView _gameResultView;
+        
         private readonly List<TileModel> _allTiles = new();
         private readonly Dictionary<TileModel, TileView> _tileViews = new();
 
@@ -44,10 +48,12 @@ namespace Controllers
         private void Start()
         {
             BuildBoard();
+            _orderSystem.Initialize(this);
             _orderView.BindToSystem(_orderSystem);
             _rackView.BindToSystem(_rackSystem);
             _orderSystem.StartFirstOrder();
             _gameStateManager.BindToSystems(_rackSystem, this);
+            _gameResultView.BindToGameStateManager(_gameStateManager);
         }
 
         /// <summary>
@@ -106,13 +112,17 @@ namespace Controllers
 
         private void HandleTileClicked(TileModel model)
         {
+            // Stop tracking immediately so GenerateNextOrder function in OrderSystem calculates accurately.
+            _allTiles.Remove(model);
+            RecalculateBlocking();
+            
             bool matched = _orderSystem.TrySubmitTile(model.TileType);
 
             if (matched)
             {
                 int slotIndex = _orderView.GetFirstUnfulfilledSlotIndex(_orderSystem.ActiveOrder);
                 Vector3 targetPos = _orderView.GetSlotWorldPosition(slotIndex);
-                RemoveTileWithAnimation(model, targetPos);
+                AnimateAndDestroy(model, targetPos, null);
                 return;
             }
 
@@ -120,25 +130,26 @@ namespace Controllers
             if (addedToRack)
             {
                 Vector3 targetPos = _rackView.GetNextEmptySlotWorldPosition(_rackSystem.Model);
-                RemoveTileWithAnimation(model, targetPos);
+                AnimateAndDestroy(model, targetPos, () => _rackSystem.CheckFullAfterAnimation());
             }
             else
                 Debug.LogWarning("Rack is full - tile couldn't be added!");
         }
 
-        private void RemoveTileWithAnimation(TileModel model, Vector3 targetWorldPos)
+        private void AnimateAndDestroy(TileModel model, Vector3 targetWorldPos, Action onComplete)
         {
             if (!_tileViews.TryGetValue(model, out var view)) return;
 
             _tileViews.Remove(model);
-            _allTiles.Remove(model);
-            RecalculateBlocking();
 
             view.AnimateFlyTo(targetWorldPos, () =>
             {
                 Destroy(view.gameObject);
+                
                 if (_allTiles.Count == 0)
                     OnBoardCleared?.Invoke();
+                
+                onComplete?.Invoke();
             });
         }
 
@@ -165,6 +176,32 @@ namespace Controllers
             return overlapX > _overlapLimit && overlapY > _overlapLimit;
         }
 
+        public IReadOnlyDictionary<TileType, int> GetRemainingTileCounts()
+        {
+            var counts = new Dictionary<TileType, int>();
+            foreach (TileModel tile in _allTiles)
+            {
+                if(!counts.ContainsKey(tile.TileType))
+                    counts[tile.TileType] = 0;
+                counts[tile.TileType]++;
+            }
+            
+            return counts;
+        }
+
+        public IReadOnlyDictionary<TileType, int> GetUnblockedTileCounts()
+        {
+            var counts = new Dictionary<TileType, int>();
+            foreach (TileModel tile in _allTiles.Where(t => !t.IsBlocked))
+            {
+                if(!counts.ContainsKey(tile.TileType))
+                    counts[tile.TileType] = 0;
+                counts[tile.TileType]++;
+            }
+            
+            return counts;
+        }
+        
         #endregion
     }
 }

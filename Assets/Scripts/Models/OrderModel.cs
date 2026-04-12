@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Data;
 
 namespace Models
@@ -8,14 +9,12 @@ namespace Models
     {
         private readonly List<OrderRequirement> _requirements;
 
-        public OrderModel(TileType req1, TileType req2, TileType req3)
+        /// <summary>
+        /// Constructor creates the order requirement list from passed tile type list 
+        /// </summary>
+        public OrderModel(List<TileType> requirements)
         {
-            _requirements = new List<OrderRequirement>
-            {
-                new OrderRequirement(req1),
-                new OrderRequirement(req2),
-                new OrderRequirement(req3)
-            };
+            _requirements = requirements.Select(t => new OrderRequirement(t)).ToList();
         }
 
         public IReadOnlyList<OrderRequirement> Requirements => _requirements;

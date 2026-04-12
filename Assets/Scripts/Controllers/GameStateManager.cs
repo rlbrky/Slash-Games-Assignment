@@ -40,11 +40,9 @@ namespace Controllers
             switch (newState)
             {
                 case GameState.Won:
-                    Debug.Log("Won");
                     OnGameWon?.Invoke();
                     break;
                 case GameState.Lost:
-                    Debug.Log("Lost");
                     OnGameLost?.Invoke();
                     break;
             }

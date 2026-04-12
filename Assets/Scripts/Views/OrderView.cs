@@ -39,13 +39,20 @@ namespace Views
         {
             for (int i = 0; i < _slots.Length; i++)
             {
-                var req = orderModel.Requirements[i];
-                var definition = _registry.Get(req.tileType);
+                if (i < orderModel.Requirements.Count)
+                {
+                    var req = orderModel.Requirements[i];
+                    var definition = _registry.Get(req.tileType);
 
-                if (definition != null)
-                    _slots[i].SetRequirement(definition, req.isFulfilled);
+                    if (definition != null)
+                        _slots[i].SetRequirement(definition, req.isFulfilled);
+                    else
+                        _slots[i].SetEmpty();
+                }
                 else
+                {
                     _slots[i].SetEmpty();
+                }
             }
         }
 

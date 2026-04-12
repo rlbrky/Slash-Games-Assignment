@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Core;
 using Data;
 using Models;
 using UnityEngine;
@@ -11,35 +13,37 @@ namespace Controllers
     {
         [Header("Settings")]
         [SerializeField] private TileDefinitionRegistry _registry;
-
+        
         private readonly List<TileType> _allTileTypes = new();
 
+        private const int OrderSize = 3;
+        
         private OrderModel _activeOrder;
+        private IBoardTileProvider _boardTileProvider;
 
         public OrderModel ActiveOrder => _activeOrder;
 
+        public event Action<OrderModel> OnNewOrder;
+        public event Action<OrderModel> OnOrderChanged;
+        
         private void Awake()
         {
             _registry.Initialize();
-            CacheAvailableTileTypes();
         }
 
-        public event Action<OrderModel> OnNewOrder;
-        public event Action<OrderModel> OnOrderChanged;
-        public event Action OnAllOrdersComplete;
-
-        private void CacheAvailableTileTypes()
+        public void Initialize(IBoardTileProvider boardTileProvider)
         {
-            foreach (TileType type in Enum.GetValues(typeof(TileType)))
-            {
-                if (type == TileType.None)
-                    continue;
-                _allTileTypes.Add(type);
-            }
+            _boardTileProvider = boardTileProvider;
         }
-
+        
         public void StartFirstOrder()
         {
+            if (_boardTileProvider == null)
+            {
+                Debug.LogError("Order System has no IBoardTileProvider!");
+                return;
+            }
+            
             GenerateNextOrder();
         }
 
@@ -53,31 +57,75 @@ namespace Controllers
 
         private void GenerateNextOrder()
         {
-            var req1 = GetRandomTileType();
-            var req2 = GetRandomTileType();
-            var req3 = GetRandomTileType();
+            List<TileType> requirements = BuildRequirements();
 
-            _activeOrder = new OrderModel(req1, req2, req3);
+            if (requirements == null)
+                return;
+
+            if (_activeOrder != null)
+            {
+                _activeOrder.OnOrderChanged -= HandleOrderChanged;
+                _activeOrder.OnOrderCompleted -= HandleOrderCompleted;
+            }
+
+            _activeOrder = new OrderModel(requirements);
             _activeOrder.OnOrderChanged += HandleOrderChanged;
             _activeOrder.OnOrderCompleted += HandleOrderCompleted;
 
             OnNewOrder?.Invoke(_activeOrder);
         }
 
-        private void HandleOrderChanged(OrderModel order)
+        /// <summary>
+        /// Builds a list of tile requirements guaranteed to be fulbillable.
+        /// </summary>
+        private List<TileType> BuildRequirements()
         {
-            OnOrderChanged?.Invoke(order);
+            // Build our available tiles dictionary.
+            var allAvailable = _boardTileProvider.GetRemainingTileCounts()
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            
+            var unblockedAvailable = _boardTileProvider.GetUnblockedTileCounts()
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            
+            var requirements = new List<TileType>();
+
+            for (int i = 0; i < OrderSize; i++)
+            {
+                // Prefer unblocked tiles to make the game easier.
+                var preferredCandidates = unblockedAvailable
+                    .Where(kvp => kvp.Value > 0)
+                    .Select(kvp => kvp.Key).ToList();
+                
+                var fallbackCandidates = allAvailable
+                    .Where(kvp => kvp.Value > 0)
+                    .Select(kvp => kvp.Key).ToList();
+
+                if (preferredCandidates.Count == 0 && fallbackCandidates.Count == 0)
+                {
+                    Debug.LogWarning($"Ran out of available tile types at slot {i}.");
+                    return requirements.Count > 0 ? requirements : null;
+                }
+                
+                var pool = preferredCandidates.Count > 0 ? preferredCandidates : fallbackCandidates;
+                var chosen = pool[Random.Range(0, pool.Count)];
+                requirements.Add(chosen);
+                
+                // Decrement from both pools to stay consistent
+                if(unblockedAvailable.ContainsKey(chosen))
+                    unblockedAvailable[chosen]--;
+                
+                if(allAvailable.ContainsKey(chosen))
+                    allAvailable[chosen]--;
+            }
+            
+            return requirements;
         }
+
+        private void HandleOrderChanged(OrderModel order) => OnOrderChanged?.Invoke(order);
 
         private void HandleOrderCompleted(OrderModel order)
         {
-            Debug.Log("Order completed! Generating next order.");
             GenerateNextOrder();
-        }
-
-        private TileType GetRandomTileType()
-        {
-            return _allTileTypes[Random.Range(0, _allTileTypes.Count)];
         }
     }
 }

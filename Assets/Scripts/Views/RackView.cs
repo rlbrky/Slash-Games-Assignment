@@ -15,6 +15,7 @@ namespace Views
         public void BindToSystem(RackSystem rackSystem)
         {
             rackSystem.OnRackChanged += HandleRackChanged;
+            RefreshAll(rackSystem.Model);
         }
 
         public void HandleRackChanged(RackModel rackModel)
