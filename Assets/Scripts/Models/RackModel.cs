@@ -31,6 +31,17 @@ namespace Models
             return true;
         }
 
+        public bool TryConsumeTile(TileType tileType)
+        {
+            int index = _slots.IndexOf(tileType);
+            if(index < 0)
+                return false;
+            
+            _slots.RemoveAt(index);
+            OnRackChanged?.Invoke(this);
+            return true;
+        }
+
         public void NotifyIfNull()
         {
             if (IsFull)

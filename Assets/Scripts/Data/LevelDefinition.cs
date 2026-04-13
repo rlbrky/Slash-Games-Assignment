@@ -17,10 +17,14 @@ namespace Data
         [SerializeField] private bool _useProceduralGeneration;
         [SerializeField] private LevelGenerationSettings _levelGenerationSettings;
         
+        [Header("Pre-computed Orders")]
+        [SerializeField] private List<TileType> _orderSequence = new();
+        
         public int RowCount => rowCount;
         public int ColumnCount => columnCount;
 
         public IReadOnlyList<TileSpawnData> Tiles => _tiles;
+        public IReadOnlyList<TileType> OrderSequence => _orderSequence;
         
         public bool UseProceduralGeneration => _useProceduralGeneration;
         public LevelGenerationSettings LevelGenerationSettings => _levelGenerationSettings;
@@ -47,6 +51,11 @@ namespace Data
         public void RemoveAllTiles()
         {
             _tiles.Clear();
+        }
+
+        public void SetOrderSequence(List<TileType> orderSequence)
+        {
+            _orderSequence = orderSequence;
         }
 #endif
     }

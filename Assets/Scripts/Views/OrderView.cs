@@ -1,4 +1,6 @@
+using System;
 using Controllers;
+using DG.Tweening;
 using Models;
 using UnityEngine;
 
@@ -13,6 +15,9 @@ namespace Views
         [SerializeField] private TileDefinitionRegistry _registry;
 
         private OrderSlotView[] _slots;
+        private OrderSystem _orderSystem;
+
+        private bool _isCompletionAnimating;
 
         private void Awake()
         {
@@ -21,8 +26,10 @@ namespace Views
 
         public void BindToSystem(OrderSystem orderSystem)
         {
+            _orderSystem = orderSystem;
             orderSystem.OnNewOrder += HandleNewOrder;
             orderSystem.OnOrderChanged += HandleOrderChanged;
+            orderSystem.OnOrderCompleted += HandleOrderCompleted;
         }
 
         private void HandleNewOrder(OrderModel orderModel)
@@ -32,7 +39,45 @@ namespace Views
 
         private void HandleOrderChanged(OrderModel orderModel)
         {
+            // Blocks refresh if completion animation is still in progress.
+            if(_isCompletionAnimating)
+                return;
+            
             RefreshAll(orderModel);
+        }
+
+        private void HandleOrderCompleted(OrderModel orderModel)
+        {
+            _isCompletionAnimating = true;
+            AnimateOrderComplete(() =>
+            {
+                _isCompletionAnimating = false;
+                _orderSystem.ReadyForNextOrder();
+            });
+        }
+
+        public void AnimateOrderComplete(Action onComplete)
+        {
+            int completedCount = 0;
+            int totalSlots = _slots.Length;
+            
+
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                // Since i is modified out of the scope we need to capture it inside this scope.
+                int index = i;
+                float delay = i * 0.1f;
+
+                DOVirtual.DelayedCall(delay, () =>
+                {
+                    _slots[index].AnimateComplete(() =>
+                    {
+                        completedCount++;
+                        if (completedCount >= totalSlots)
+                            onComplete?.Invoke();
+                    });
+                });
+            }
         }
 
         private void RefreshAll(OrderModel orderModel)

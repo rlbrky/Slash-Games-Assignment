@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Data;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,7 +12,7 @@ namespace Core
         /// Generates a reproducible tile layout from the given settings.
         /// The same seed always produces the same board, enabling replayable levels.
         /// </summary>
-        public static List<TileSpawnData> Generate(LevelGenerationSettings settings)
+        public static (List<TileSpawnData> tiles, List<TileType> orderSequence) Generate(LevelGenerationSettings settings)
         {
             // Save current random state so we can restore it after generation.
             // This ensures our seeded generation doesn't affect any other system
@@ -61,7 +62,9 @@ namespace Core
             
             // Restore random state so other systems are unaffected by our seed.
             Random.state = state;
-            return tiles;
+            
+            var orderSequence = SimulateSolutionOrders(tiles);
+            return (tiles, orderSequence);
         }
 
         /// <summary>
@@ -139,6 +142,79 @@ namespace Core
                 int j = Random.Range(0, i + 1);
                 (list[i], list[j]) = (list[j], list[i]);
             }
+        }
+
+        /// <summary>
+        /// Picks most accessible tile types at each step, creating a solution path.
+        /// </summary>
+        public static List<TileType> SimulateSolutionOrders(List<TileSpawnData> tiles)
+        {
+            // Uses a copy so that original layout is unaffected.
+            var remaining = tiles.Select(t => new TileSpawnData
+            {
+                column = t.column,
+                row = t.row,
+                layer = t.layer,
+                tileType = t.tileType,
+            }).ToList();
+            
+            List<TileType> orders = new List<TileType>();
+
+            while (remaining.Count > 0)
+            {
+                var unblockedCounts = remaining
+                    .Where(t => !SimulateIsBlocked(t, remaining))
+                    .GroupBy(t => t.tileType)
+                    .ToDictionary(g => g.Key, g => g.Count());
+                
+                var totalCounts = remaining
+                    .GroupBy(t => t.tileType)
+                    .ToDictionary(k => k.Key, k => k.Count());
+                
+                // Only types with 3+ total remaining are eligible for a full order.
+                // Among eligible, prefer with most currently unblocked copies.
+                var chosen = unblockedCounts
+                    .Where(kvp => totalCounts.ContainsKey(kvp.Key) && totalCounts[kvp.Key] >= 3)
+                    .OrderByDescending(kvp => kvp.Value)
+                    .Select(kvp => (TileType?)kvp.Key)
+                    .FirstOrDefault();
+
+                if (chosen == null)
+                {
+                    Debug.LogError("Level simulation failed — no valid order found. Check tile counts are multiples of 3.");
+                    break;
+                }
+                
+                orders.Add(chosen.Value);
+
+                // Remove 3 tiles of the chosen type, prefer unblocked ones
+                int removed = 0;
+                var toRemove = remaining
+                    .Where(t => t.tileType == chosen.Value)
+                    .OrderBy(t => SimulateIsBlocked(t, remaining) ? 1 : 0)
+                    .Take(3)
+                    .ToList();
+                
+                foreach (TileSpawnData tile in toRemove)
+                    remaining.Remove(tile);
+            }
+
+            return orders;
+        }
+
+        private static bool SimulateIsBlocked(TileSpawnData tile, List<TileSpawnData> all)
+        {
+            return all.Any(other =>
+                other != tile &&
+                other.layer > tile.layer &&
+                SimulateOverlaps(tile, other));
+        }
+
+        private static bool SimulateOverlaps(TileSpawnData tile, TileSpawnData other)
+        {
+            float overlapX = 1f - Mathf.Abs(tile.column - other.column);
+            float overlapY = 1f - Mathf.Abs(tile.row - other.row);
+            return overlapX > 0.25f && overlapY > 0.25f;
         }
     }
 }

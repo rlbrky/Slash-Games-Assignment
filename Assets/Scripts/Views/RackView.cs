@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Controllers;
 using Models;
@@ -47,6 +48,20 @@ namespace Views
                 return Vector3.zero;
 
             return _slots[nextIndex].transform.position;
+        }
+
+        /// <summary>
+        /// Animates each slot clearing sequentially.
+        /// </summary>
+        public void AnimateDrainSlot(int slotIndex, Action onComplete)
+        {
+            if (slotIndex < 0 || slotIndex >= _slots.Count)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+            
+            _slots[slotIndex].AnimateDrained(onComplete);
         }
     }
 }

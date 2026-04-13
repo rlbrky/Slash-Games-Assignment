@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Data;
 using Models;
 using UnityEngine;
@@ -37,6 +38,18 @@ namespace Controllers
         public void CheckFullAfterAnimation()
         {
             _model.NotifyIfNull();
+        }
+
+        public bool TryConsumeTile(TileType tileType, out int consumedIndex)
+        {
+            consumedIndex = _model.Slots.ToList().IndexOf(tileType) < 0
+                ? -1
+                : _model.Slots.ToList().IndexOf(tileType);
+
+            if (consumedIndex < 0)
+                return false;
+            
+            return _model.TryConsumeTile(tileType);
         }
 
         private void HandleRackChanged(RackModel model) => OnRackChanged?.Invoke(model);

@@ -5,6 +5,7 @@ using Core;
 using Data;
 using DG.Tweening;
 using Models;
+using UnityEditor;
 using UnityEngine;
 using Views;
 
@@ -48,12 +49,14 @@ namespace Controllers
         private void Start()
         {
             BuildBoard();
-            _orderSystem.Initialize(this);
+            _orderSystem.Initialize(this, _rackSystem, _level.OrderSequence);
             _orderView.BindToSystem(_orderSystem);
+            _orderSystem.OnRackTileDrained += slotIndex => _rackView.AnimateDrainSlot(slotIndex, null);
             _rackView.BindToSystem(_rackSystem);
             _orderSystem.StartFirstOrder();
             _gameStateManager.BindToSystems(_rackSystem, this);
             _gameResultView.BindToGameStateManager(_gameStateManager);
+            
         }
 
         /// <summary>
@@ -61,9 +64,22 @@ namespace Controllers
         /// </summary>
         private void BuildBoard()
         {
-            var tiles = _level.UseProceduralGeneration
-                ? LevelGenerator.Generate(_level.LevelGenerationSettings)
-                : new List<TileSpawnData>(_level.Tiles);
+            List<TileSpawnData> tiles;
+
+            if (_level.UseProceduralGeneration)
+            {
+                var result = LevelGenerator.Generate(_level.LevelGenerationSettings);
+                tiles = result.tiles;
+#if UNITY_EDITOR
+                // Store computed order sequence back on the asset to make it persist
+                _level.SetOrderSequence(result.orderSequence);
+                EditorUtility.SetDirty(_level);
+#endif
+            }
+            else
+            {
+                tiles = new List<TileSpawnData>(_level.Tiles);
+            }
             
             foreach (var spawnData in tiles)
             {
@@ -130,11 +146,20 @@ namespace Controllers
                 return;
             }
 
-            bool addedToRack = _rackSystem.TryAddTile(model.TileType);
+            bool addedToRack = false;
+            Vector3 rackTargetPos = Vector3.zero;
+
+            // Since TryAddTile increments slot count, capture position before adding.
+            rackTargetPos = _rackView.GetNextEmptySlotWorldPosition(_rackSystem.Model);
+            addedToRack = _rackSystem.TryAddTile(model.TileType);
+
             if (addedToRack)
             {
-                Vector3 targetPos = _rackView.GetNextEmptySlotWorldPosition(_rackSystem.Model);
-                AnimateAndDestroy(model, targetPos, () => _rackSystem.CheckFullAfterAnimation());
+                AnimateAndDestroy(model, rackTargetPos, () =>
+                {
+                    _orderSystem.DrainRackIntoOrder();
+                    _rackSystem.CheckFullAfterAnimation();
+                });
             }
             else
                 Debug.LogWarning("Rack is full - tile couldn't be added!");
