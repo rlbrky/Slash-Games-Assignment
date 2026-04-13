@@ -188,7 +188,6 @@ namespace Core
                 orders.Add(chosen.Value);
 
                 // Remove 3 tiles of the chosen type, prefer unblocked ones
-                int removed = 0;
                 var toRemove = remaining
                     .Where(t => t.tileType == chosen.Value)
                     .OrderBy(t => SimulateIsBlocked(t, remaining) ? 1 : 0)

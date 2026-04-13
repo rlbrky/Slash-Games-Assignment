@@ -16,10 +16,14 @@ namespace Views
         [Header("Colors")] 
         [SerializeField] private Color _emptyColor = Color.grey;
         
-        [Header("Animation")] 
+        [Header("Drain Animation")]
         [SerializeField] private float _drainAnimationY = 40f;
-        [SerializeField] private float _drainAnimationDuration = 0.2f;
-        [SerializeField] private float _clearAnimationDuration = 0.25f;
+        [SerializeField] private float _drainAnticipationDuration = 0.06f;
+        [SerializeField] private Vector3 _drainAnticipationScale = new Vector3(1.1f, 0.9f, 1f);
+        [SerializeField] private float _drainRiseDuration = 0.2f;
+        [SerializeField] private Vector3 _drainStretchScale = new Vector3(0.9f, 1.15f, 1f);
+        [SerializeField] private float _drainStretchDuration = 0.1f;
+        [SerializeField] private float _drainSettleDuration = 0.1f;
 
         public void SetTile(TileDefinition definition)
         {
@@ -39,11 +43,20 @@ namespace Views
         {
             Sequence sequence = DOTween.Sequence();
 
+            // Anticipation
+            sequence.Append(transform.DOScale(_drainAnticipationScale, _drainAnticipationDuration));
+            
+            // Pop up with stretch
             sequence.Append(_iconImage.transform.DOLocalMoveY(
-                    _iconImage.transform.localPosition.y + _drainAnimationY, _drainAnimationDuration)
+                    _iconImage.transform.localPosition.y + _drainAnimationY, _drainRiseDuration)
                 .SetEase(Ease.OutQuad));
-            sequence.Join(_iconImage.DOFade(0f, _drainAnimationDuration));
-            sequence.Join(_backgroundImage.DOColor(Color.green, _drainAnimationDuration));
+            sequence.Join(transform.DOScale(_drainStretchScale, _drainStretchDuration));
+            sequence.Join(_iconImage.DOFade(0f, _drainRiseDuration));
+            sequence.Join(_backgroundImage.DOColor(Color.green, _drainRiseDuration * 0.5f));
+
+            // Settle back
+            sequence.Append(transform.DOScale(Vector3.one, _drainSettleDuration).SetEase(Ease.OutBounce));
+
             sequence.OnComplete(() =>
             {
                 _iconImage.transform.localPosition = Vector3.zero;

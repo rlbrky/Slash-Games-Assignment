@@ -31,6 +31,17 @@ namespace Views
         [SerializeField] private float _punchScale = 0.2f;
         [SerializeField] private float _punchDuration = 0.5f;
 
+        [Header("Show Animation")]
+        [SerializeField] private float _fadeInDuration = 0.2f;
+        [SerializeField] private float _initialScale = 0.5f;
+        [SerializeField] private float _overshootScale = 1.1f;
+        [SerializeField] private float _scaleUpDuration = 0.4f;
+        [SerializeField] private float _scaleUpOvershoot = 2f;
+        [SerializeField] private float _settleScaleDuration = 0.15f;
+        [SerializeField] private float _shakeStrength = 10f;
+        [SerializeField] private float _shakeDuration = 0.3f;
+        [SerializeField] private int _shakeVibrato = 20;
+        
         private void Awake()
         {
             Hide(true);
@@ -63,16 +74,20 @@ namespace Views
         {
             gameObject.SetActive(true);
             
-            _canvasGroup.alpha = 1f;
-            _panel.localScale = Vector3.one * 0.8f;
+            _canvasGroup.alpha = 0f;
+            _panel.localScale = Vector3.one * _initialScale;
 
-            _canvasGroup.DOFade(1f, _fadeDuration);
-            _panel.DOScale(Vector3.one, _fadeDuration)
-                .SetEase(Ease.OutBack)
-                .OnComplete(() =>
-                {
-                    _panel.DOPunchScale(Vector3.one * _punchScale, _punchDuration);
-                });
+            Sequence sequence = DOTween.Sequence();
+            
+            sequence.Append(_canvasGroup.DOFade(1f, _fadeInDuration));
+            sequence.Join(_panel.DOScale(Vector3.one * _overshootScale, _scaleUpDuration)
+                .SetEase(Ease.OutBack, _scaleUpOvershoot));
+            sequence.Append(_panel.DOScale(Vector3.one, _settleScaleDuration)
+                .SetEase(Ease.InOutQuad));
+            
+            // Shake whole panel
+            sequence.Append(_panel.DOShakeAnchorPos(_shakeDuration, _shakeStrength, _shakeVibrato, 90, false, true));
+            sequence.Join(_panel.DOPunchScale(Vector3.one * _punchScale, _punchDuration, 2));
         }
 
         private void Hide(bool instant = false)
