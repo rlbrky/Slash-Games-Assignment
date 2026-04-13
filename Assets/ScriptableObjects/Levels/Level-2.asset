@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d3841e5ae404944bfa72dc08cc4570, type: 3}
+  m_Name: Level-2
+  m_EditorClassIdentifier: 
+  columnCount: 7
+  rowCount: 9
+  _tiles: []
+  _useProceduralGeneration: 1
+  _levelGenerationSettings: {fileID: 11400000, guid: 481982667cfe8904fa2d1e5411ac6479, type: 2}
+  _orderSequence: 02000000010000000e0000000b00000003000000090000000c000000080000000600000005000000080000000a0000000f00000007000000040000000d000000

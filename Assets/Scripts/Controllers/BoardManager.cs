@@ -20,12 +20,6 @@ namespace Controllers
         [SerializeField] private TileView _tilePrefab;
         [SerializeField] private RectTransform _boardRoot;
 
-        [Header("Layout")] 
-        [SerializeField] private float _tileSize = 100f;
-        [SerializeField] private float _layerOffset = 6f;
-        [SerializeField] private float _overlapLimit = 0.25f;
-        [SerializeField] private float _layerScaleBonus = 0.04f;
-
         [Header("Systems")] 
         [SerializeField] private OrderSystem _orderSystem;
         [SerializeField] private OrderView _orderView;
@@ -39,6 +33,9 @@ namespace Controllers
         private readonly List<TileModel> _allTiles = new();
         private readonly Dictionary<TileModel, TileView> _tileViews = new();
 
+        private float OverlapLimit => _level.LevelGenerationSettings.OverlapLimit;
+        private float LayerScaleBonus => _level.LevelGenerationSettings.LayerScaleBonus;
+        
         public event Action OnBoardCleared;
         
         private void Awake()
@@ -56,7 +53,6 @@ namespace Controllers
             _orderSystem.StartFirstOrder();
             _gameStateManager.BindToSystems(_rackSystem, this);
             _gameResultView.BindToGameStateManager(_gameStateManager);
-            
         }
 
         /// <summary>
@@ -97,7 +93,7 @@ namespace Controllers
 
                 rectTransform.anchoredPosition = GetTilePosition(model);
                 // Make each layer's tiles bigger than the last for depth effect. Closer tiles look bigger.
-                rectTransform.localScale = Vector3.one * (1f + model.Layer * _layerScaleBonus);
+                rectTransform.localScale = Vector3.one * (1f + model.Layer * _level.LevelGenerationSettings.LayerScaleBonus);
 
                 view.Initialize(model, definition);
                 view.OnTileClicked += HandleTileClicked;
@@ -116,7 +112,12 @@ namespace Controllers
         public void RecalculateBlocking()
         {
             foreach (var tile in _allTiles)
-                tile.SetBlocked(_allTiles.Any(other => other.Layer > tile.Layer && Overlaps(tile, other)));
+            {
+                var blockers = _allTiles.Where(other => other.Layer > tile.Layer && Overlaps(tile, other)).ToList();
+                bool shouldBeBlocked = blockers.Count > 0;
+        
+                tile.SetBlocked(shouldBeBlocked);
+            }
         }
 
         /// <summary>
@@ -186,23 +187,45 @@ namespace Controllers
 
         private Vector2 GetTilePosition(TileModel model)
         {
-            float gridWidth = (_level.ColumnCount - 1) * _tileSize;
-            float gridHeight = (_level.RowCount - 1) * _tileSize;
+            float gridWidth = (_level.ColumnCount - 1) * _level.LevelGenerationSettings.TileSize;
+            float gridHeight = (_level.RowCount - 1) * _level.LevelGenerationSettings.TileSize;
 
-            float startX = -gridWidth / 2f;
-            float startY = -gridHeight / 2f;
+            int maxLayer = _level.UseProceduralGeneration
+                ? _level.LevelGenerationSettings.LayerCount - 1
+                : _level.Tiles.Max(t => t.layer);
+            float totalLayerOffset = maxLayer * _level.LevelGenerationSettings.LayerOffset;
+            
+            float startX = -gridWidth / 2f - totalLayerOffset / 2f;
+            float startY = -gridHeight / 2f - totalLayerOffset / 2f;
 
             return new Vector2(
-                startX + model.Column * _tileSize + model.Layer * _layerOffset,
-                startY + model.Row * _tileSize + model.Layer * _layerOffset
+                startX + model.Column * _level.LevelGenerationSettings.TileSize + model.Layer * _level.LevelGenerationSettings.LayerOffset,
+                startY + model.Row * _level.LevelGenerationSettings.TileSize + model.Layer * _level.LevelGenerationSettings.LayerOffset
             );
         }
 
-        private bool Overlaps(TileModel tile, TileModel other)
+        private bool Overlaps(TileModel lower, TileModel upper)
         {
-            float overlapX = 1f - Mathf.Abs(tile.Column - other.Column);
-            float overlapY = 1f - Mathf.Abs(tile.Row - other.Row);
-            return overlapX > _overlapLimit && overlapY > _overlapLimit;
+            // Convert layer offset from pixels to grid units
+            float layerOffsetInGridUnits =
+                _level.LevelGenerationSettings.LayerOffset / _level.LevelGenerationSettings.TileSize;
+            int layerDiff = upper.Layer - lower.Layer;
+            
+            // Calculate visual shift caused by layer offset
+            float visualShift = layerDiff * layerOffsetInGridUnits;
+            
+            // Adjust upper tile position to match visual position
+            float effectiveUpperColumn = upper.Column + visualShift;
+            float effectiveUpperRow = upper.Row + visualShift;
+            
+            float overlapX = 1f - Mathf.Abs(lower.Column - effectiveUpperColumn);
+            float overlapY = 1f - Mathf.Abs(lower.Row - effectiveUpperRow);
+            
+            float upperScale = 1f + upper.Layer * _level.LevelGenerationSettings.LayerScaleBonus;
+            float effectiveLimit = _level.LevelGenerationSettings.OverlapLimit / upperScale;
+            bool result = overlapX > effectiveLimit && overlapY > effectiveLimit;
+
+            return overlapX > effectiveLimit && overlapY > effectiveLimit;
         }
 
         public IReadOnlyDictionary<TileType, int> GetRemainingTileCounts()

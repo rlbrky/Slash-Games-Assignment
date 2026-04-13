@@ -498,10 +498,6 @@ MonoBehaviour:
   _level: {fileID: 11400000, guid: d669199e2d3a7c247968225cb0741363, type: 2}
   _tilePrefab: {fileID: 2603247799677277360, guid: 4dd1c20fc812d264e96c0c06f93fcf5f, type: 3}
   _boardRoot: {fileID: 232499901}
-  _tileSize: 160
-  _layerOffset: 18
-  _overlapLimit: 0.25
-  _layerScaleBonus: 0.1
   _orderSystem: {fileID: 207050388}
   _orderView: {fileID: 1029765883}
   _rackSystem: {fileID: 1290701357}
@@ -1286,7 +1282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.7058824}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9411765}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1636,6 +1632,15 @@ MonoBehaviour:
   _fadeDuration: 0.4
   _punchScale: 0.2
   _punchDuration: 0.5
+  _fadeInDuration: 0.2
+  _initialScale: 0.5
+  _overshootScale: 1.1
+  _scaleUpDuration: 0.4
+  _scaleUpOvershoot: 2
+  _settleScaleDuration: 0.15
+  _shakeStrength: 10
+  _shakeDuration: 0.3
+  _shakeVibrato: 20
 --- !u!225 &999540357
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -32,6 +32,8 @@ namespace Views
                     var definition = _registry.Get(rackModel.Slots[i]);
                     if (definition != null)
                         _slots[i].SetTile(definition);
+                    else
+                        _slots[i].SetEmpty();
                 }
                 else
                 {

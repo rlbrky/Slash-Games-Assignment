@@ -9,7 +9,7 @@ namespace Models
         public float Column { get; private set; }
         public int Layer { get; private set; }
         public TileType TileType { get; private set; }
-        public bool IsBlocked { get; set; }
+        public bool IsBlocked { get; private set; }
 
         public event Action<TileModel> OnBlockedStateChanged;
         

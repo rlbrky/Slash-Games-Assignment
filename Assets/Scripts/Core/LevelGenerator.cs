@@ -40,7 +40,7 @@ namespace Core
             int poolIndex = 0;
             for (int layer = 0; layer < settings.LayerCount && poolIndex < tilePool.Count; layer++)
             {
-                int tilesOnLayer = Mathf.Min(settings.TilesPerLayer, tilePool.Count - poolIndex);
+                int tilesOnLayer = Mathf.Min(settings.TilesPerLayer[layer], tilePool.Count - poolIndex);
                 
                 // Get shuffled set of grid positions for current layer
                 List<Vector2> positions = GetLayerPositions(settings.Columns, settings.Rows, tilesOnLayer, layer);
@@ -63,7 +63,7 @@ namespace Core
             // Restore random state so other systems are unaffected by our seed.
             Random.state = state;
             
-            var orderSequence = SimulateSolutionOrders(tiles);
+            var orderSequence = SimulateSolutionOrders(tiles, settings);
             return (tiles, orderSequence);
         }
 
@@ -76,7 +76,7 @@ namespace Core
         {
             var counts = new Dictionary<TileType, int>();
             var availableTypes = settings.TileRegistry.GetAllTileTypesList();
-            int totalTiles = settings.LayerCount * settings.TilesPerLayer;
+            int totalTiles = settings.TilesPerLayer.Sum();
             
             if (availableTypes.Count == 0)
             {
@@ -116,13 +116,19 @@ namespace Core
             // would push the last column/row outside the board boundary.
             int effectiveColumns = (layer % 2 == 0) ? columns : columns - 1;
             int effectiveRows = (layer % 2 == 0) ? rows : rows - 1;
+
+            // To prevent out-of-bounds tiles
+            float maxCol = columns - 1f;
+            float maxRow = rows - 1f;
             
             var all = new List<Vector2>();
             for (int col = 0; col < effectiveColumns; col++)
             {
                 for (int row = 0; row < effectiveRows; row++)
                 {
-                    all.Add(new Vector2(col + offset, row + offset));
+                    float x = Mathf.Clamp(col + offset, 0f, maxCol);
+                    float y = Mathf.Clamp(row + offset, 0f, maxRow);
+                    all.Add(new Vector2(x, y));
                 }
             }
 
@@ -147,7 +153,7 @@ namespace Core
         /// <summary>
         /// Picks most accessible tile types at each step, creating a solution path.
         /// </summary>
-        public static List<TileType> SimulateSolutionOrders(List<TileSpawnData> tiles)
+        public static List<TileType> SimulateSolutionOrders(List<TileSpawnData> tiles, LevelGenerationSettings settings)
         {
             // Uses a copy so that original layout is unaffected.
             var remaining = tiles.Select(t => new TileSpawnData
@@ -163,7 +169,7 @@ namespace Core
             while (remaining.Count > 0)
             {
                 var unblockedCounts = remaining
-                    .Where(t => !SimulateIsBlocked(t, remaining))
+                    .Where(t => !SimulateIsBlocked(t, remaining, settings))
                     .GroupBy(t => t.tileType)
                     .ToDictionary(g => g.Key, g => g.Count());
                 
@@ -190,7 +196,7 @@ namespace Core
                 // Remove 3 tiles of the chosen type, prefer unblocked ones
                 var toRemove = remaining
                     .Where(t => t.tileType == chosen.Value)
-                    .OrderBy(t => SimulateIsBlocked(t, remaining) ? 1 : 0)
+                    .OrderBy(t => SimulateIsBlocked(t, remaining, settings) ? 1 : 0)
                     .Take(3)
                     .ToList();
                 
@@ -201,19 +207,30 @@ namespace Core
             return orders;
         }
 
-        private static bool SimulateIsBlocked(TileSpawnData tile, List<TileSpawnData> all)
+        private static bool SimulateIsBlocked(TileSpawnData tile, List<TileSpawnData> all, LevelGenerationSettings settings)
         {
             return all.Any(other =>
                 other != tile &&
                 other.layer > tile.layer &&
-                SimulateOverlaps(tile, other));
+                SimulateOverlaps(tile, other, settings));
         }
 
-        private static bool SimulateOverlaps(TileSpawnData tile, TileSpawnData other)
+        private static bool SimulateOverlaps(TileSpawnData lower, TileSpawnData upper, LevelGenerationSettings settings)
         {
-            float overlapX = 1f - Mathf.Abs(tile.column - other.column);
-            float overlapY = 1f - Mathf.Abs(tile.row - other.row);
-            return overlapX > 0.25f && overlapY > 0.25f;
+            float layerOffsetInGridUnits = settings.LayerOffset / settings.TileSize;
+            int layerDiff = upper.layer - lower.layer;
+            float visualShift = layerDiff * layerOffsetInGridUnits;
+
+            float effectiveUpperColumn = upper.column + visualShift;
+            float effectiveUpperRow = upper.row + visualShift;
+            
+            float overlapX = 1f - Mathf.Abs(lower.column - effectiveUpperColumn);
+            float overlapY = 1f - Mathf.Abs(lower.row - effectiveUpperRow);
+            
+            float upperScale = 1f + upper.layer * settings.LayerScaleBonus;
+            float effectiveLimit = settings.OverlapLimit / upperScale;
+            
+            return overlapX > effectiveLimit && overlapY > effectiveLimit;
         }
     }
 }

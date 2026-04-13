@@ -5,12 +5,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cb7a4236-53c9-45a7-a9d9-5b8bf5ecd9d9" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Editor.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Editor/LevelEditorWindow.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/GUIPackCartoon.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/OrderSlotView.prefab" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/OrderSlotView.prefab.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/RackSlotView.prefab" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/RackSlotView.prefab.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/LevelGenerationSettings.asset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/LevelGenerationSettings.asset.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/Levels/Level-2.asset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/Levels/Level-2.asset.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/GameStateManager.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/OrderSystem.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/RackSystem.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Core/IBoardTileProvider.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Core/LevelGenerator.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Data/GameState.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Data/LevelGenerationSettings.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Data/OrderRequirement.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/OrderModel.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Models/RackModel.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/GameResultView.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/OrderSlotView.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/OrderView.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/RackSlotView.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Views/RackView.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/TextMesh Pro.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Background_Blue.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Background_Blue.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Background_Gray.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Background_Gray.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Bg_Rect_Gray.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Bg_Rect_Gray.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Bg_Rect_Orange.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Tile Images/Bg_Rect_Orange.png.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Slash Games Assignment/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Slash Games Assignment/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ScriptableObjects/Levels/Level-1.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ScriptableObjects/Levels/Level-1.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Controllers/BoardManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/LevelGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/LevelGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/GameResultView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/GameResultView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/OrderSlotView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/OrderSlotView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Data/LevelGenerationSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Data/LevelGenerationSettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Models/TileModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Models/TileModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/RackSlotView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/RackSlotView.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/TileView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/TileView.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Views/RackView.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Views/RackView.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +181,7 @@
       <workItem from="1775919513140" duration="14796000" />
       <workItem from="1776017695087" duration="9219000" />
       <workItem from="1776073971771" duration="3069000" />
-      <workItem from="1776082355885" duration="15603000" />
+      <workItem from="1776082355885" duration="21667000" />
     </task>
     <task id="LOCAL-00001" summary="gitignore update.">
       <option name="closed" value="true" />
@@ -217,7 +255,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776102326021</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Improved overall animations.">
+      <option name="closed" value="true" />
+      <created>1776105185146</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1776105185146</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -253,7 +299,8 @@
     <MESSAGE value="Added game result screen to the project.&#10;- Cleaned up some code&#10;- Improved win-lose logic&#10;- Improved block overlay visuals&#10;- Improved order system" />
     <MESSAGE value="Added procedural level generation and improved level generation tool to handle new level design technique." />
     <MESSAGE value="Improved level generating system, added some animations into the game, improved order system, improved rack system." />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved level generating system, added some animations into the game, improved order system, improved rack system." />
+    <MESSAGE value="Improved overall animations." />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved overall animations." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
