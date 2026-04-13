@@ -5,8 +5,8 @@ namespace Models
 {
     public class TileModel
     {
-        public int Row { get; private set; }
-        public int Column { get; private set; }
+        public float Row { get; private set; }
+        public float Column { get; private set; }
         public int Layer { get; private set; }
         public TileType TileType { get; private set; }
         public bool IsBlocked { get; set; }

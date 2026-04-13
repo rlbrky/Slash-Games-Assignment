@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Data;
 using UnityEngine;
 
@@ -22,6 +23,14 @@ public class TileDefinitionRegistry : ScriptableObject
         return tileDefinition;
     }
 
+    public List<TileType> GetAllTileTypesList()
+    {
+        return _definitions
+            .Where(d => d != null && d.Type != TileType.None)
+            .Select(d => d.Type)
+            .ToList();
+    }
+    
     private void OnEnable()
     {
         Initialize();

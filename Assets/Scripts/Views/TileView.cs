@@ -76,7 +76,6 @@ namespace Views
             }
             
             _blockedOverlay.gameObject.SetActive(blocked);
-            _iconImage.color = blocked ? _blockedTint : _normalTint;
             _button.interactable = !blocked;
         }
 
@@ -87,7 +86,7 @@ namespace Views
             _isAnimating = true;
             _button.interactable = false;
             transform.SetAsLastSibling();
-
+            
             _rect.DOScale(Vector3.one * _flyScaleUpAmount, _flyDuration * _flyScaleUpDurationRatio)
                 .OnComplete(() =>
                 {
@@ -103,7 +102,6 @@ namespace Views
 
         public void AnimateBlockedChange(bool blocked)
         {
-            _iconImage.DOColor(blocked ? _blockedTint : _normalTint, _blockedFadeDuration);
             _button.interactable = !blocked;
 
             if (blocked)

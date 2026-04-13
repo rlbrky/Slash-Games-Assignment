@@ -7,9 +7,8 @@ namespace Views
 {
     public class RackView : MonoBehaviour
     {
-        [Header("References")] [SerializeField]
-        private List<RackSlotView> _slots;
-
+        [Header("References")]
+        [SerializeField] private List<RackSlotView> _slots;
         [SerializeField] private TileDefinitionRegistry _registry;
 
         public void BindToSystem(RackSystem rackSystem)

@@ -5,8 +5,8 @@ namespace Data
     [Serializable]
     public class TileSpawnData
     {
-        public int column;
-        public int row;
+        public float column;
+        public float row;
         public int layer;
         public TileType tileType;
     }

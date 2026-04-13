@@ -311,3 +311,5 @@ MonoBehaviour:
     row: 6
     layer: 2
     tileType: 12
+  _useProceduralGeneration: 0
+  _levelGenerationSettings: {fileID: 0}

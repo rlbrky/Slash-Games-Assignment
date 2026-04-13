@@ -12,8 +12,8 @@ namespace Controllers
 {
     public class BoardManager : MonoBehaviour, IBoardTileProvider
     {
-        [Header("References")] [SerializeField]
-        private TileDefinitionRegistry _registry;
+        [Header("References")] 
+        [SerializeField] private TileDefinitionRegistry _registry;
 
         [SerializeField] private LevelDefinition _level;
         [SerializeField] private TileView _tilePrefab;
@@ -61,7 +61,11 @@ namespace Controllers
         /// </summary>
         private void BuildBoard()
         {
-            foreach (var spawnData in _level.Tiles)
+            var tiles = _level.UseProceduralGeneration
+                ? LevelGenerator.Generate(_level.LevelGenerationSettings)
+                : new List<TileSpawnData>(_level.Tiles);
+            
+            foreach (var spawnData in tiles)
             {
                 var model = new TileModel(spawnData);
                 var definition = _registry.Get(spawnData.tileType);

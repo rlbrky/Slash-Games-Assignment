@@ -150,34 +150,35 @@ namespace Editor
 
             _gridScrollPos = EditorGUILayout.BeginScrollView(_gridScrollPos);
 
-            int columns = _targetLevel.ColumnCount;
-            int rows = _targetLevel.RowCount;
+            bool isOddLayer = _selectedLayer % 2 != 0;
+            float offset = isOddLayer ? 0.5f : 0f;
 
-            float totalWidth = columns * (CellSize + CellPadding);
-            float totalHeight = rows * (CellSize + CellPadding);
-            
-            Rect gridRect = GUILayoutUtility.GetRect(totalWidth, totalHeight);
+            int effectiveColumns = isOddLayer ? _targetLevel.ColumnCount - 1 : _targetLevel.ColumnCount;
+            int effectiveRows = isOddLayer ? _targetLevel.RowCount - 1 : _targetLevel.RowCount;
+
+            Rect gridRect = GUILayoutUtility.GetRect(
+                effectiveColumns * (CellSize + CellPadding),
+                effectiveRows * (CellSize + CellPadding));
 
             // Draw rows top-to-bottom so row 0 is at the bottom visually
-            for (int row = rows - 1; row >= 0; row--)
+            for (int row = effectiveRows - 1; row >= 0; row--)
             {
-                for (int col = 0; col < columns; col++)
+                for (int col = 0; col < effectiveColumns; col++)
                 {
                     float x = gridRect.x + col * (CellSize + CellPadding);
-                    float y = gridRect.y + (rows - 1 - row) * (CellSize + CellPadding);
+                    float y = gridRect.y + (effectiveRows - 1 - row) * (CellSize + CellPadding);
                     
-                    Rect cellRect = new Rect(x, y, CellSize, CellSize);
-                    DrawCell(cellRect, col, row);
+                    DrawCell(new Rect(x, y, CellSize, CellSize), col + offset, row + offset);
                 }
             }
             
-            HandleGridInput(gridRect, columns, rows);
+            HandleGridInput(gridRect, effectiveColumns, effectiveRows, offset);
             
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawCell(Rect rect, int col, int row)
+        private void DrawCell(Rect rect, float col, float row)
         {
             var tilesOnCell = GetTilesAt(col, row);
             
@@ -236,7 +237,7 @@ namespace Editor
             }
         }
 
-        private void HandleGridInput(Rect gridRect, int columns, int rows)
+        private void HandleGridInput(Rect gridRect, int columns, int rows, float offset)
         {
             Event e = Event.current;
 
@@ -262,7 +263,7 @@ namespace Editor
 
         #region Tile Operations
 
-        private List<TileSpawnData> GetTilesAt(int col, int row)
+        private List<TileSpawnData> GetTilesAt(float col, float row)
         {
             var result = new List<TileSpawnData>();
             foreach (var tile in _targetLevel.Tiles)
@@ -273,14 +274,14 @@ namespace Editor
             return result;
         }
         
-        private void PlaceTile(int col, int row, int layer, TileType tileType)
+        private void PlaceTile(float col, float row, int layer, TileType tileType)
         {
             // Replace if tile already exists on this layer at this position
             EraseTile(col, row, layer);
             _targetLevel.AddTile(new TileSpawnData { column = col, row = row, layer = layer, tileType = tileType });
         }
 
-        private void EraseTile(int col, int row, int layer)
+        private void EraseTile(float col, float row, int layer)
         {
             _targetLevel.RemoveTile(col, row, layer);
         }

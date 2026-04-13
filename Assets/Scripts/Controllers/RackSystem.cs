@@ -12,6 +12,9 @@ namespace Controllers
         private RackModel _model;
 
         public RackModel Model => _model;
+        
+        public event Action<RackModel> OnRackChanged;
+        public event Action OnRackFull;
 
         private void Awake()
         {
@@ -25,10 +28,7 @@ namespace Controllers
             _model.OnRackChanged -= HandleRackChanged;
             _model.OnRackFull -= HandleRackFull;
         }
-
-        public event Action<RackModel> OnRackChanged;
-        public event Action OnRackFull;
-
+        
         public bool TryAddTile(TileType tileType)
         {
             return _model.TryAddTile(tileType);
