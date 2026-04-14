@@ -1,0 +1,7 @@
+Question: How would you design a level design tool for this game?
+
+Answer: 
+I created a simple level editor tool inside unity, I believe something like that could handle hand crafted levels for these kind of games.
+I also believe procedural generation could work as well, a pure code based tool that prepares ScriptableObjects when clicked. 
+That would allow for rapid level designing and combined with the editor tool it would make level designing pretty fast.
+Though the generation I've built doesn't create them in certain patterns and places tiles randomly.
