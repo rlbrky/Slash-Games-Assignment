@@ -495,7 +495,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _registry: {fileID: 11400000, guid: 9271c02a89dc90c4a9a785fbb711e4c7, type: 2}
-  _level: {fileID: 11400000, guid: d669199e2d3a7c247968225cb0741363, type: 2}
+  _level: {fileID: 11400000, guid: a39c96394e7dbf542974dff708e4f5d3, type: 2}
   _tilePrefab: {fileID: 2603247799677277360, guid: 4dd1c20fc812d264e96c0c06f93fcf5f, type: 3}
   _boardRoot: {fileID: 232499901}
   _orderSystem: {fileID: 207050388}

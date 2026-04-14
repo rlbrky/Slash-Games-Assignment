@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core;
 using Data;
 using UnityEditor;
 using UnityEngine;
@@ -26,7 +27,17 @@ namespace Editor
         private int _selectedLayer;
         private TileType _selectedTileType = TileType.Donut;
 
-        private int _maxLayer = 3;
+        private int MaxLayers
+        {
+            get
+            {
+                if (_targetLevel != null && _targetLevel.LevelGenerationSettings != null)
+                    return _targetLevel.LevelGenerationSettings.LayerCount;
+                
+                // Fallback
+                return 3;
+            }
+        }
 
         private Vector2 _gridScrollPos;
         private Vector2 _paletteScrollPos;
@@ -89,7 +100,7 @@ namespace Editor
             EditorGUILayout.BeginHorizontal();
             
             GUILayout.Label("Active Layer", GUILayout.Width(90));
-            for (int i = 0; i < _maxLayer; i++)
+            for (int i = 0; i < MaxLayers; i++)
             {
                 bool isSelected = _selectedLayer == i;
                 GUI.backgroundColor = isSelected ? Color.cyan : Color.white;
@@ -105,6 +116,11 @@ namespace Editor
             {
                 if (EditorUtility.DisplayDialog("Clear All Tiles", "Remove all tiles from every layer?", "Clear", "Cancel"))
                     ClearAll();
+            }
+
+            if (GUILayout.Button("Generate Orders", GUILayout.Width(110), GUILayout.Height(ToolbarHeight)))
+            {
+                GenerateOrderSequence();
             }
             
             EditorGUILayout.EndHorizontal();
@@ -183,8 +199,11 @@ namespace Editor
             var tilesOnCell = GetTilesAt(col, row);
             
             // Background
-            EditorGUI.DrawRect(rect, Color.blue);
+            EditorGUI.DrawRect(rect, new Color(0.15f, 0.15f, 0.2f));
 
+            // To show cell bounds
+            DrawRectBorder(rect, new Color(0.3f, 0.3f, 0.4f), 1f);
+            
             foreach (var tile in tilesOnCell)
             {
                 float inset = tile.layer * 3f;
@@ -196,22 +215,31 @@ namespace Editor
                 );
 
                 var definition = _registry.Get(tile.tileType);
-                Color tileColor = definition != null ? definition.TileColor : Color.white;
+                Color tileColor = definition != null ? definition.TileColor : Color.magenta;
                 
                 // Dim tiles not on the selected layer
-                if (tile.layer != _selectedLayer)
-                    tileColor = Color.Lerp(tileColor, Color.black, 0.5f);
+                bool isActiveLayer = tile.layer == _selectedLayer;
+                if (!isActiveLayer)
+                    tileColor = Color.Lerp(tileColor, Color.black, 0.6f);
                 
                 EditorGUI.DrawRect(tileRect, tileColor);
 
                 // Draw tile type initial as label
+                string label = tile.tileType.ToString();
+                label = label.Length >= 2 ? label.Substring(0, 2) : label;
+                
                 var labelStyle = new GUIStyle(EditorStyles.miniLabel)
                 {
                     alignment = TextAnchor.MiddleCenter,
-                    fontSize = 8,
-                    normal = { textColor = Color.white }
+                    fontSize = isActiveLayer ? 12 : 8,
+                    fontStyle = isActiveLayer ? FontStyle.Bold : FontStyle.Normal,
+                    normal = { textColor = GetContrastingTextColor(tileColor) }
                 };
-                EditorGUI.LabelField(tileRect, tile.tileType.ToString().Substring(0, 2), labelStyle);
+                EditorGUI.LabelField(tileRect, label, labelStyle);
+                
+                // Highlight active layer tile with a border
+                if(isActiveLayer)
+                    DrawRectBorder(tileRect, Color.yellow, 2f);
             }
             
             // Highlight active layer tile slot with border
@@ -226,17 +254,29 @@ namespace Editor
             }
             
             // Draw col/row label on bottom-left cell
-            if (col == 0 || row == 0)
+            // Draw col/row label on every cell
+            var coordStyle = new GUIStyle(EditorStyles.miniLabel)
             {
-                var coordStyle = new GUIStyle(EditorStyles.miniLabel)
-                {
-                    fontSize = 7,
-                    normal = { textColor = Color.white }
-                };
-                EditorGUI.LabelField(rect, $"{col},{row}", coordStyle);
-            }
+                fontSize = 7,
+                normal = { textColor = new Color(0.6f, 0.6f, 0.6f) }
+            };
+            EditorGUI.LabelField(new Rect(rect.x + 2, rect.yMax - 12, 40, 12), $"{col},{row}", coordStyle);
         }
 
+        private void DrawRectBorder(Rect rect, Color color, float thickness)
+        {
+            EditorGUI.DrawRect(new Rect(rect.x, rect.y, rect.width, thickness), color); // Top
+            EditorGUI.DrawRect(new Rect(rect.x, rect.yMax - thickness, rect.width, thickness), color); // Bottom
+            EditorGUI.DrawRect(new Rect(rect.x, rect.y, thickness, rect.height), color); // Left
+            EditorGUI.DrawRect(new Rect(rect.xMax - thickness, rect.y, thickness, rect.height), color); // Right
+        }
+
+        private Color GetContrastingTextColor(Color background)
+        {
+            float luminance = 0.299f * background.r + 0.587f * background.g + 0.114f * background.b;
+            return luminance > 0.5f ? Color.black : Color.white;
+        }
+        
         private void HandleGridInput(Rect gridRect, int columns, int rows, float offset)
         {
             Event e = Event.current;
@@ -249,10 +289,13 @@ namespace Editor
 
             if (col < 0 || col >= columns || row < 0 || row >= rows) return;
 
+            float actualCol = col + offset;
+            float actualRow = row + offset;
+            
             if (e.button == 0)
-                PlaceTile(col, row, _selectedLayer, _selectedTileType);
+                PlaceTile(actualCol, actualRow, _selectedLayer, _selectedTileType);
             else if (e.button == 1)
-                EraseTile(col, row, _selectedLayer);
+                EraseTile(actualCol, actualRow, _selectedLayer);
 
             e.Use();
             EditorUtility.SetDirty(_targetLevel);
@@ -268,7 +311,7 @@ namespace Editor
             var result = new List<TileSpawnData>();
             foreach (var tile in _targetLevel.Tiles)
             {
-                if (tile.column == col && tile.row == row)
+                if (Mathf.Approximately(tile.column, col) && Mathf.Approximately(tile.row, row))
                     result.Add(tile);
             }
             return result;
@@ -299,5 +342,48 @@ namespace Editor
         }
         
         #endregion
+
+        private void GenerateOrderSequence()
+        {
+            if (_targetLevel.Tiles.Count == 0)
+            {
+                EditorUtility.DisplayDialog("No Tiles", "Place some tiles first before generating orders.", "OK");
+                return;
+            }
+            
+            // Ensure tile count is multiple of 3
+            var tileCounts = new Dictionary<TileType, int>();
+            foreach (var tile in _targetLevel.Tiles)
+            {
+                if(!tileCounts.ContainsKey(tile.tileType))
+                    tileCounts[tile.tileType] = 0;
+                tileCounts[tile.tileType]++;
+            }
+
+            var invalidTypes = new List<string>();
+            foreach (var kvp in tileCounts)
+            {
+                if(kvp.Value % 3 != 0)
+                    invalidTypes.Add($"{kvp.Key}: ({kvp.Value})");
+            }
+
+            if (invalidTypes.Count > 0)
+            {
+                string message = "Tile counts must be multiples of 3 for solvability.\n\nInvalid counts:\n" + 
+                                 string.Join("\n", invalidTypes);
+                EditorUtility.DisplayDialog("Invalid Tile Counts", message, "OK");
+                return;
+            }
+            
+            // Generate order sequence using LevelGenerator's simulation
+            var tiles = new List<TileSpawnData>(_targetLevel.Tiles);
+            var orderSequence = LevelGenerator.SimulateSolutionOrders(tiles, _targetLevel.LevelGenerationSettings);
+
+            _targetLevel.SetOrderSequence(orderSequence);
+            EditorUtility.SetDirty(_targetLevel);
+            
+            EditorUtility.DisplayDialog("Orders Generated", 
+                $"Generated {orderSequence.Count} orders for {_targetLevel.Tiles.Count} tiles.", "OK");
+        }
     }
 }

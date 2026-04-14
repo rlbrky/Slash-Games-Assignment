@@ -15,94 +15,270 @@ MonoBehaviour:
   columnCount: 7
   rowCount: 9
   _tiles:
-  - column: 1
-    row: 4
-    layer: 0
-    tileType: 14
-  - column: 2
-    row: 3
-    layer: 0
-    tileType: 14
-  - column: 5
-    row: 6
-    layer: 2
-    tileType: 14
-  - column: 1
-    row: 7
-    layer: 0
-    tileType: 12
-  - column: 2
-    row: 6
-    layer: 0
-    tileType: 12
-  - column: 5
-    row: 2
-    layer: 2
-    tileType: 12
-  - column: 1
-    row: 1
-    layer: 2
-    tileType: 11
-  - column: 4
-    row: 4
-    layer: 2
-    tileType: 11
-  - column: 1
-    row: 6
-    layer: 2
-    tileType: 11
-  - column: 2
-    row: 4
-    layer: 0
-    tileType: 10
-  - column: 3
-    row: 5
-    layer: 0
-    tileType: 10
-  - column: 3
-    row: 4
-    layer: 2
-    tileType: 10
-  - column: 2
-    row: 5
-    layer: 2
-    tileType: 10
-  - column: 1
-    row: 3
-    layer: 2
-    tileType: 10
-  - column: 2
-    row: 2
-    layer: 2
-    tileType: 10
-  - column: 3
-    row: 6
-    layer: 2
-    tileType: 8
-  - column: 4
-    row: 5
-    layer: 2
-    tileType: 8
-  - column: 3
-    row: 1
+  - column: 1.5
+    row: 5.5
+    layer: 1
+    tileType: 4
+  - column: 1.5
+    row: 4.5
+    layer: 1
+    tileType: 5
+  - column: 1.5
+    row: 3.5
+    layer: 1
+    tileType: 6
+  - column: 1.5
+    row: 2.5
+    layer: 1
+    tileType: 7
+  - column: 1.5
+    row: 1.5
     layer: 1
     tileType: 8
-  - column: 3
-    row: 7
-    layer: 0
+  - column: 2.5
+    row: 1.5
+    layer: 1
+    tileType: 9
+  - column: 3.5
+    row: 1.5
+    layer: 1
+    tileType: 10
+  - column: 4.5
+    row: 1.5
+    layer: 1
+    tileType: 11
+  - column: 4.5
+    row: 2.5
+    layer: 1
+    tileType: 12
+  - column: 4.5
+    row: 3.5
+    layer: 1
+    tileType: 13
+  - column: 4.5
+    row: 4.5
+    layer: 1
+    tileType: 14
+  - column: 4.5
+    row: 5.5
+    layer: 1
     tileType: 15
-  - column: 3
-    row: 7
-    layer: 2
-    tileType: 15
-  - column: 2
+  - column: 3.5
+    row: 5.5
+    layer: 1
+    tileType: 1
+  - column: 2.5
+    row: 5.5
+    layer: 1
+    tileType: 2
+  - column: 1
     row: 6
     layer: 2
-    tileType: 15
-  - column: 2
+    tileType: 3
+  - column: 1
+    row: 4
+    layer: 2
+    tileType: 5
+  - column: 1
+    row: 2
+    layer: 2
+    tileType: 7
+  - column: 5
+    row: 1
+    layer: 2
+    tileType: 12
+  - column: 5
+    row: 2
+    layer: 2
+    tileType: 13
+  - column: 5
     row: 4
     layer: 2
     tileType: 15
+  - column: 5
+    row: 5
+    layer: 2
+    tileType: 1
+  - column: 2
+    row: 3
+    layer: 2
+    tileType: 1
+  - column: 4
+    row: 2
+    layer: 2
+    tileType: 1
+  - column: 4
+    row: 5
+    layer: 2
+    tileType: 2
+  - column: 2
+    row: 2
+    layer: 2
+    tileType: 2
+  - column: 2
+    row: 5
+    layer: 2
+    tileType: 3
+  - column: 4
+    row: 4
+    layer: 2
+    tileType: 3
+  - column: 2
+    row: 4
+    layer: 2
+    tileType: 4
+  - column: 4
+    row: 3
+    layer: 2
+    tileType: 4
+  - column: 3
+    row: 2
+    layer: 2
+    tileType: 5
+  - column: 3
+    row: 5
+    layer: 2
+    tileType: 5
+  - column: 0
+    row: 6
+    layer: 0
+    tileType: 1
+  - column: 0
+    row: 5
+    layer: 0
+    tileType: 2
+  - column: 0
+    row: 4
+    layer: 0
+    tileType: 3
+  - column: 0
+    row: 3
+    layer: 0
+    tileType: 4
+  - column: 0
+    row: 2
+    layer: 0
+    tileType: 5
+  - column: 0
+    row: 1
+    layer: 0
+    tileType: 6
+  - column: 1
+    row: 0
+    layer: 0
+    tileType: 7
+  - column: 2
+    row: 0
+    layer: 0
+    tileType: 8
+  - column: 3
+    row: 0
+    layer: 0
+    tileType: 9
+  - column: 4
+    row: 0
+    layer: 0
+    tileType: 10
+  - column: 5
+    row: 0
+    layer: 0
+    tileType: 11
+  - column: 6
+    row: 1
+    layer: 0
+    tileType: 12
+  - column: 6
+    row: 2
+    layer: 0
+    tileType: 13
+  - column: 6
+    row: 3
+    layer: 0
+    tileType: 14
+  - column: 6
+    row: 4
+    layer: 0
+    tileType: 15
+  - column: 6
+    row: 5
+    layer: 0
+    tileType: 1
+  - column: 6
+    row: 6
+    layer: 0
+    tileType: 2
+  - column: 5
+    row: 7
+    layer: 0
+    tileType: 3
+  - column: 2
+    row: 7
+    layer: 0
+    tileType: 6
+  - column: 1
+    row: 7
+    layer: 0
+    tileType: 7
+  - column: 4
+    row: 7
+    layer: 0
+    tileType: 7
+  - column: 3
+    row: 7
+    layer: 0
+    tileType: 6
+  - column: 1
+    row: 6
+    layer: 0
+    tileType: 6
+  - column: 5.5
+    row: 3.5
+    layer: 1
+    tileType: 7
+  - column: 1
+    row: 2
+    layer: 0
+    tileType: 2
+  - column: 5
+    row: 2
+    layer: 0
+    tileType: 4
+  - column: 5
+    row: 4
+    layer: 0
+    tileType: 3
+  - column: 1
+    row: 4
+    layer: 0
+    tileType: 5
+  - column: 5
+    row: 5
+    layer: 0
+    tileType: 4
+  - column: 5
+    row: 1
+    layer: 0
+    tileType: 6
+  - column: 3
+    row: 6
+    layer: 0
+    tileType: 9
+  - column: 2
+    row: 6
+    layer: 0
+    tileType: 10
+  - column: 4
+    row: 6
+    layer: 0
+    tileType: 11
+  - column: 3
+    row: 1
+    layer: 0
+    tileType: 14
+  - column: 2
+    row: 1
+    layer: 0
+    tileType: 8
   _useProceduralGeneration: 0
   _levelGenerationSettings: {fileID: 11400000, guid: 481982667cfe8904fa2d1e5411ac6479, type: 2}
-  _orderSequence: 
+  _orderSequence: 0300000004000000050000000200000001000000060000000700000009000000050000000700000008000000020000000f000000010000000a0000000d0000000e000000030000000c0000000b0000000400000006000000
